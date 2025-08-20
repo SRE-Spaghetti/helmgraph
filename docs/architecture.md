@@ -62,13 +62,13 @@ The primary architectural style for `helmgraph` will be a **Monolith**, implemen
 ### High Level Project Diagram
 
 ```mermaid
-graph TD
-    User --> HelmGraph_CLI[HelmGraph CLI Tool]
-    HelmGraph_CLI --> Helm_CLI[Helm CLI (External)]
-    Helm_CLI --> Helm_Chart[Local Helm Chart]
-    HelmGraph_CLI --> Kubernetes_Manifest[Generated Kubernetes Manifest (In-memory)]
-    Kubernetes_Manifest --> Cypher_Output[Cypher .cypher File]
-    Cypher_Output --> Neo4j_Database[Neo4j Database (External)]
+graph TD;
+    User-->HelmGraph_CLI[HelmGraph CLI Tool];
+    HelmGraph_CLI-->Helm_CLI[Helm CLI];
+    Helm_CLI-->Helm_Chart[Local Helm Chart];
+    HelmGraph_CLI --> Kubernetes_Manifest[Generated Kubernetes Manifest (In-memory)];
+    Kubernetes_Manifest --> Cypher_Output[Cypher .cypher File];
+    Cypher_Output --> Neo4j_Database[Neo4j Database (External)];
 ```
 
 ### Architectural and Design Patterns
