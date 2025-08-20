@@ -66,9 +66,9 @@ graph TD;
     User-->HelmGraph_CLI[HelmGraph CLI Tool];
     HelmGraph_CLI-->Helm_CLI[Helm CLI];
     Helm_CLI-->Helm_Chart[Local Helm Chart];
-    HelmGraph_CLI --> Kubernetes_Manifest[Generated Kubernetes Manifest (In-memory)];
-    Kubernetes_Manifest --> Cypher_Output[Cypher .cypher File];
-    Cypher_Output --> Neo4j_Database[Neo4j Database (External)];
+    HelmGraph_CLI-->Kubernetes_Manifest[Generated Kubernetes Manifest];
+    Kubernetes_Manifest-->Cypher_Output[Cypher .cypher File];
+    Cypher_Output-->Neo4j_Database[Neo4j Database];
 ```
 
 ### Architectural and Design Patterns
@@ -308,17 +308,16 @@ C4Container
     title HelmGraph CLI Tool Components
 
     Container(cli_core, "HelmGraph CLI Core", "Go Application", "Main entry point, orchestrates workflow, handles I/O.")
+    Container(helm_cli_boundary, "Helm CLI External", "External Application", "provides the helm template functionality.")
     Container(manifest_generator, "Manifest Generator", "Go Component", "Executes 'helm template' and captures output.")
     Container(parser, "Kubernetes Manifest Parser", "Go Component", "Parses YAML, extracts resources and properties.")
     Container(relationship_identifier, "Relationship Identifier", "Go Component", "Identifies connections between resources.")
     Container(cypher_generator, "Cypher Generator", "Go Component", "Converts parsed data into Cypher statements.")
     Container(cypher_linter, "Cypher Linter", "Go Component", "Validates generated Cypher syntax.")
+    Container(neo4j_boundary, "Cypher output", "cypher output", "the output cypher commands.")
 
-    System_Boundary(helm_cli_boundary, "External Helm CLI")
-    System_Boundary(neo4j_boundary, "External Neo4j Database")
-
-    Rel(cli_core, manifest_generator, "Invokes")
-    Rel(manifest_generator, helm_cli_boundary, "Invokes", "Uses `os/exec`")
+    Rel(cli_core, manifest_generator,"Invokes")
+    Rel(manifest_generator, helm_cli_boundary, "Invokes", "Uses `os exec`")
     Rel(cli_core, parser, "Invokes")
     Rel(parser, relationship_identifier, "Provides data to")
     Rel(cli_core, cypher_generator, "Invokes")
