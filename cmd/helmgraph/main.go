@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"helmgraph/internal/manifest"
+	"helmgraph/internal/parser"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -24,6 +25,17 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
+		}
+
+		resources, err := parser.Parse(manifest)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing manifest: %v\n", err)
+			os.Exit(1)
+		}
+
+		// For now, just print the parsed resources
+		for _, r := range resources {
+			fmt.Printf("Found resource: Kind=%s, Name=%s, Namespace=%s\n", r.Kind, r.Metadata.Name, r.Metadata.Namespace)
 		}
 
 		if outputFile != "" {
