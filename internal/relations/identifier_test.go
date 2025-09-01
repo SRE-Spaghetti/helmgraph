@@ -13,13 +13,14 @@ func TestIdentify(t *testing.T) {
 				Name: "my-service",
 			},
 			Spec: struct {
-				Selector    map[string]string `yaml:"selector"`
-				Template    struct {
+				Selector map[string]string `yaml:"selector"`
+				Template struct {
 					Spec struct {
 						Containers []parser.Container `yaml:"containers"`
 						Volumes    []parser.Volume    `yaml:"volumes"`
 					} `yaml:"spec"`
 				} `yaml:"template"`
+				VolumeClaimTemplates []parser.PersistentVolumeClaim `yaml:"volumeClaimTemplates"`
 			}{
 				Selector: map[string]string{"app": "my-app"},
 			},
@@ -31,13 +32,14 @@ func TestIdentify(t *testing.T) {
 				Labels: map[string]string{"app": "my-app"},
 			},
 			Spec: struct {
-				Selector    map[string]string `yaml:"selector"`
-				Template    struct {
+				Selector map[string]string `yaml:"selector"`
+				Template struct {
 					Spec struct {
 						Containers []parser.Container `yaml:"containers"`
 						Volumes    []parser.Volume    `yaml:"volumes"`
 					} `yaml:"spec"`
 				} `yaml:"template"`
+				VolumeClaimTemplates []parser.PersistentVolumeClaim `yaml:"volumeClaimTemplates"`
 			}{
 				Template: struct {
 					Spec struct {
@@ -89,5 +91,42 @@ func TestIdentify(t *testing.T) {
 
 	if len(relationships) != 3 {
 		t.Fatalf("expected 3 relationships, but got %d", len(relationships))
+	}
+
+	// Add a StatefulSet and PVC for testing
+	resources = append(resources, &parser.Resource{
+		Kind: "StatefulSet",
+		Metadata: parser.Metadata{
+			Name: "my-statefulset",
+		},
+		Spec: struct {
+			Selector map[string]string `yaml:"selector"`
+			Template struct {
+				Spec struct {
+					Containers []parser.Container `yaml:"containers"`
+					Volumes    []parser.Volume    `yaml:"volumes"`
+				} `yaml:"spec"`
+			} `yaml:"template"`
+			VolumeClaimTemplates []parser.PersistentVolumeClaim `yaml:"volumeClaimTemplates"`
+		}{
+			VolumeClaimTemplates: []parser.PersistentVolumeClaim{
+				{
+					Metadata: parser.Metadata{
+						Name: "my-pvc",
+					},
+				},
+			},
+		},
+	}, &parser.Resource{
+		Kind: "PersistentVolumeClaim",
+		Metadata: parser.Metadata{
+			Name: "my-pvc",
+		},
+	})
+
+	relationships = Identify(resources)
+
+	if len(relationships) != 4 {
+		t.Fatalf("expected 4 relationships, but got %d", len(relationships))
 	}
 }

@@ -57,6 +57,13 @@ type Volume struct {
 	} `yaml:"configMap"`
 }
 
+// PersistentVolumeClaim represents a PersistentVolumeClaim.
+type PersistentVolumeClaim struct {
+	APIVersion string   `yaml:"apiVersion"`
+	Kind       string   `yaml:"kind"`
+	Metadata   Metadata `yaml:"metadata"`
+}
+
 // Resource represents a generic Kubernetes resource.
 type Resource struct {
 	APIVersion string   `yaml:"apiVersion"`
@@ -70,5 +77,6 @@ type Resource struct {
 				Volumes    []Volume    `yaml:"volumes"`
 			} `yaml:"spec"`
 		} `yaml:"template"`
+		VolumeClaimTemplates []PersistentVolumeClaim `yaml:"volumeClaimTemplates"`
 	} `yaml:"spec"`
 }

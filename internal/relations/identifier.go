@@ -125,6 +125,19 @@ func Identify(resources []*parser.Resource) []*Relationship {
 				}
 			}
 		}
+	if r.Kind == "StatefulSet" {
+			for _, pvc := range r.Spec.VolumeClaimTemplates {
+				for _, p := range resources {
+					if p.Kind == "PersistentVolumeClaim" && p.Metadata.Name == pvc.Metadata.Name {
+						relationships = append(relationships, &Relationship{
+							Source: r,
+							Target: p,
+							Type:   "USES_PVC",
+						})
+					}
+				}
+			}
+		}
 	}
 
 	return relationships
