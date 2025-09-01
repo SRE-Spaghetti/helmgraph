@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"helmgraph/internal/manifest"
 	"helmgraph/internal/parser"
+	"helmgraph/internal/relations"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -36,6 +37,11 @@ var rootCmd = &cobra.Command{
 		// For now, just print the parsed resources
 		for _, r := range resources {
 			fmt.Printf("Found resource: Kind=%s, Name=%s, Namespace=%s\n", r.Kind, r.Metadata.Name, r.Metadata.Namespace)
+		}
+
+		relationships := relations.Identify(resources)
+		for _, rel := range relationships {
+			fmt.Printf("Found relationship: %s --[%s]--> %s\n", rel.Source.Metadata.Name, rel.Type, rel.Target.Metadata.Name)
 		}
 
 		if outputFile != "" {
