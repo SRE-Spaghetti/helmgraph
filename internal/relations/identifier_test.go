@@ -13,7 +13,7 @@ func TestIdentify(t *testing.T) {
 				Name: "my-service",
 			},
 			Spec: struct {
-				Selector map[string]string `yaml:"selector"`
+				Selector parser.Selector `yaml:"selector"`
 				Template struct {
 					Spec struct {
 						Containers []parser.Container `yaml:"containers"`
@@ -32,7 +32,7 @@ func TestIdentify(t *testing.T) {
 				Labels: map[string]string{"app": "my-app"},
 			},
 			Spec: struct {
-				Selector map[string]string `yaml:"selector"`
+				Selector parser.Selector `yaml:"selector"`
 				Template struct {
 					Spec struct {
 						Containers []parser.Container `yaml:"containers"`
@@ -100,7 +100,7 @@ func TestIdentify(t *testing.T) {
 			Name: "my-statefulset",
 		},
 		Spec: struct {
-			Selector map[string]string `yaml:"selector"`
+			Selector parser.Selector `yaml:"selector"`
 			Template struct {
 				Spec struct {
 					Containers []parser.Container `yaml:"containers"`

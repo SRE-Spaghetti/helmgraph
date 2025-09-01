@@ -4,9 +4,9 @@ import "helmgraph/internal/parser"
 
 // Relationship represents a relationship between two Kubernetes resources.
 type Relationship struct {
-	Source    *parser.Resource
-	Target    *parser.Resource
-	Type      string
+	Source     *parser.Resource
+	Target     *parser.Resource
+	Type       string
 	Properties map[string]interface{}
 }
 
@@ -125,7 +125,7 @@ func Identify(resources []*parser.Resource) []*Relationship {
 				}
 			}
 		}
-	if r.Kind == "StatefulSet" {
+		if r.Kind == "StatefulSet" {
 			for _, pvc := range r.Spec.VolumeClaimTemplates {
 				for _, p := range resources {
 					if p.Kind == "PersistentVolumeClaim" && p.Metadata.Name == pvc.Metadata.Name {

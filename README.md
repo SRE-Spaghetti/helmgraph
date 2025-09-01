@@ -23,9 +23,17 @@ This was developed using [the BMAD Method](https://github.com/bmad-code-org/BMAD
    2. The [PRD docuemnt](docs/prd.md)
 1. Then hand edited the PRD document (leaving the old one as [a backup](docs/prd-backup.md)).
    1. Please compare the two to see the edits
-1. I will continue to refine the plan some more
-1. Then I will tackle the [Execute workflow](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/docs/user-guide.md#the-core-development-cycle-ide)
-   with `gemini-2.5-pro` model.
+1. Then as the `*agent architect` I created the [architecture.md](docs/architecture.md)
+
+1. For the [Execute Workflow](https://github.com/bmad-code-org/BMAD-METHOD/blob/main/docs/user-guide.md#the-core-development-cycle-ide)
+   I ran it with [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) with `google-2.5-pro` model (instead of the
+   IDE as suggested by BMAD)
+1. First I sharded the PRD and Architecture documents (strictly this is a part of the Planning Workflow but neds the bigger model)
+1. Then I used the `*agent sm` (Scrum Master) to "create next story" iterating through the 5 in Epic 1 and the 2 in Epic 2
+   1. I stopped after each story and committed the code for each
+   2. When ever a test failed I stopped the code generation and ran the test manually to diagnose the problem
+1. When all stories were finished I ran the code to test it on real Helm charts and made some adjustments
+1. Finally I got Gemini to create a Makefile
 
 
 ### Gemini CLI notes:
