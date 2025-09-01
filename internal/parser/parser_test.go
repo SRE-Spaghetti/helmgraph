@@ -11,12 +11,19 @@ kind: Service
 metadata:
   name: my-service
   namespace: default
+spec:
+  selector:
+    app: my-app
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: my-deployment
   namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: my-app
 `
 	resources, err := Parse(manifest)
 	if err != nil {

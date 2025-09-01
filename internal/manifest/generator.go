@@ -17,10 +17,16 @@ func Generate(chartPath, releaseName, namespace, repo string) (string, error) {
 		chartPath = fmt.Sprintf(".//.helm-charts/%s", chartPath)
 	}
 
-	args := []string{"template", releaseName, chartPath}
+	args := []string{"template"}
 	if namespace != "" {
 		args = append(args, "--namespace", namespace)
 	}
+
+	if releaseName != "" {
+		args = append(args, "--release-name", releaseName)
+	}
+
+	args = append(args, chartPath)
 
 	cmd := exec.Command("helm", args...)
 	output, err := cmd.CombinedOutput()

@@ -40,10 +40,10 @@ type EnvVar struct {
 
 // Container represents a single container that is expected to be run on a pod.
 type Container struct {
-	Name         string        `yaml:"name"`
-	Env          []EnvVar      `yaml:"env"`
+	Name         string          `yaml:"name"`
+	Env          []EnvVar        `yaml:"env"`
 	EnvFrom      []EnvFromSource `yaml:"envFrom"`
-	VolumeMounts []VolumeMount `yaml:"volumeMounts"`
+	VolumeMounts []VolumeMount   `yaml:"volumeMounts"`
 }
 
 // Volume represents a named volume in a pod that is accessible to containers.
@@ -70,8 +70,8 @@ type Resource struct {
 	Kind       string   `yaml:"kind"`
 	Metadata   Metadata `yaml:"metadata"`
 	Spec       struct {
-		Selector    map[string]string `yaml:"selector"`
-		Template    struct {
+		Selector Selector `yaml:"selector"`
+		Template struct {
 			Spec struct {
 				Containers []Container `yaml:"containers"`
 				Volumes    []Volume    `yaml:"volumes"`
