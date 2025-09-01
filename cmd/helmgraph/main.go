@@ -16,6 +16,7 @@ var (
 	releaseName string
 	namespace   string
 	outputFile  string
+	repo        string
 )
 
 var rootCmd = &cobra.Command{
@@ -23,7 +24,7 @@ var rootCmd = &cobra.Command{
 	Short: "Generate a Cypher script from a Helm chart.",
 	Long:  `HelmGraph generates a Cypher script from a Helm chart that can be imported into Neo4j.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		manifest, err := manifest.Generate(chartPath, releaseName, namespace)
+		manifest, err := manifest.Generate(chartPath, releaseName, namespace, repo)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 			os.Exit(1)
@@ -63,6 +64,7 @@ func init() {
 	rootCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Namespace")
 	rootCmd.Flags().StringVarP(&outputFile, "out", "o", "", "Output file name (default: stdout)")
 
+	rootCmd.Flags().StringVarP(&repo, "repo", "", "", "Helm repository URL")
 	rootCmd.MarkFlagRequired("chart")
 	rootCmd.MarkFlagRequired("release")
 }

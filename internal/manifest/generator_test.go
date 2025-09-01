@@ -47,7 +47,7 @@ spec:
 	}
 
 	// Test case 1: Successful generation
-	output, err := Generate("testdata/mychart", "my-release", "default")
+	output, err := Generate("testdata/mychart", "my-release", "default", "")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
@@ -72,8 +72,17 @@ spec:
 	}
 
 	// Test case 2: Chart not found
-	_, err = Generate("testdata/nonexistent-chart", "my-release", "default")
+	_, err = Generate("testdata/nonexistent-chart", "my-release", "default", "")
 	if err == nil {
 		t.Error("expected an error, but got nil")
+	}
+
+	// Test case 3: Remote chart
+	// This is an integration test and requires network access and helm CLI to be configured.
+	// It is disabled by default.
+	t.Skip("skipping remote chart test")
+	_, err = Generate("bitnami/nginx", "my-release", "default", "https://charts.bitnami.com/bitnami")
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
 	}
 }
