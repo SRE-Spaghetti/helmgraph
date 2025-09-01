@@ -31,6 +31,100 @@ func Identify(resources []*parser.Resource) []*Relationship {
 				}
 			}
 		}
+		if r.Kind == "Deployment" {
+			for _, v := range r.Spec.Template.Spec.Volumes {
+				if v.ConfigMap.Name != "" {
+					for _, c := range resources {
+						if c.Kind == "ConfigMap" && c.Metadata.Name == v.ConfigMap.Name {
+							relationships = append(relationships, &Relationship{
+								Source: r,
+								Target: c,
+								Type:   "USES_CONFIG",
+								Properties: map[string]interface{}{
+									"volume": v.Name,
+								},
+							})
+						}
+					}
+				}
+				if v.Secret.SecretName != "" {
+					for _, s := range resources {
+						if s.Kind == "Secret" && s.Metadata.Name == v.Secret.SecretName {
+							relationships = append(relationships, &Relationship{
+								Source: r,
+								Target: s,
+								Type:   "USES_SECRET",
+								Properties: map[string]interface{}{
+									"volume": v.Name,
+								},
+							})
+						}
+					}
+				}
+			}
+			for _, c := range r.Spec.Template.Spec.Containers {
+				for _, e := range c.EnvFrom {
+					if e.ConfigMapRef.Name != "" {
+						for _, cm := range resources {
+							if cm.Kind == "ConfigMap" && cm.Metadata.Name == e.ConfigMapRef.Name {
+								relationships = append(relationships, &Relationship{
+									Source: r,
+									Target: cm,
+									Type:   "USES_CONFIG",
+									Properties: map[string]interface{}{
+										"envFrom": true,
+									},
+								})
+							}
+						}
+					}
+					if e.SecretRef.Name != "" {
+						for _, s := range resources {
+							if s.Kind == "Secret" && s.Metadata.Name == e.SecretRef.Name {
+								relationships = append(relationships, &Relationship{
+									Source: r,
+									Target: s,
+									Type:   "USES_SECRET",
+									Properties: map[string]interface{}{
+										"envFrom": true,
+									},
+								})
+							}
+						}
+					}
+				}
+				for _, e := range c.Env {
+					if e.ValueFrom.ConfigMapKeyRef.Name != "" {
+						for _, cm := range resources {
+							if cm.Kind == "ConfigMap" && cm.Metadata.Name == e.ValueFrom.ConfigMapKeyRef.Name {
+								relationships = append(relationships, &Relationship{
+									Source: r,
+									Target: cm,
+									Type:   "USES_CONFIG",
+									Properties: map[string]interface{}{
+										"env_var_name": e.Name,
+									},
+								})
+							}
+						}
+					}
+					if e.ValueFrom.SecretKeyRef.Name != "" {
+						for _, s := range resources {
+							if s.Kind == "Secret" && s.Metadata.Name == e.ValueFrom.SecretKeyRef.Name {
+								relationships = append(relationships, &Relationship{
+									Source: r,
+									Target: s,
+									Type:   "USES_SECRET",
+									Properties: map[string]interface{}{
+										"env_var_name": e.Name,
+									},
+								})
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	return relationships

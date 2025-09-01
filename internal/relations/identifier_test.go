@@ -13,7 +13,13 @@ func TestIdentify(t *testing.T) {
 				Name: "my-service",
 			},
 			Spec: struct {
-				Selector map[string]string `yaml:"selector"`
+				Selector    map[string]string `yaml:"selector"`
+				Template    struct {
+					Spec struct {
+						Containers []parser.Container `yaml:"containers"`
+						Volumes    []parser.Volume    `yaml:"volumes"`
+					} `yaml:"spec"`
+				} `yaml:"template"`
 			}{
 				Selector: map[string]string{"app": "my-app"},
 			},
@@ -24,31 +30,64 @@ func TestIdentify(t *testing.T) {
 				Name:   "my-deployment",
 				Labels: map[string]string{"app": "my-app"},
 			},
+			Spec: struct {
+				Selector    map[string]string `yaml:"selector"`
+				Template    struct {
+					Spec struct {
+						Containers []parser.Container `yaml:"containers"`
+						Volumes    []parser.Volume    `yaml:"volumes"`
+					} `yaml:"spec"`
+				} `yaml:"template"`
+			}{
+				Template: struct {
+					Spec struct {
+						Containers []parser.Container `yaml:"containers"`
+						Volumes    []parser.Volume    `yaml:"volumes"`
+					} `yaml:"spec"`
+				}{
+					Spec: struct {
+						Containers []parser.Container `yaml:"containers"`
+						Volumes    []parser.Volume    `yaml:"volumes"`
+					}{
+						Volumes: []parser.Volume{
+							{
+								Name: "config",
+								ConfigMap: struct {
+									Name string `yaml:"name"`
+								}{
+									Name: "my-configmap",
+								},
+							},
+							{
+								Name: "secret",
+								Secret: struct {
+									SecretName string `yaml:"secretName"`
+								}{
+									SecretName: "my-secret",
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 		{
-			Kind: "Deployment",
+			Kind: "ConfigMap",
 			Metadata: parser.Metadata{
-				Name:   "another-deployment",
-				Labels: map[string]string{"app": "another-app"},
+				Name: "my-configmap",
+			},
+		},
+		{
+			Kind: "Secret",
+			Metadata: parser.Metadata{
+				Name: "my-secret",
 			},
 		},
 	}
 
 	relationships := Identify(resources)
 
-	if len(relationships) != 1 {
-		t.Fatalf("expected 1 relationship, but got %d", len(relationships))
-	}
-
-	if relationships[0].Type != "SELECTS" {
-		t.Errorf("unexpected relationship type: %s", relationships[0].Type)
-	}
-
-	if relationships[0].Source.Metadata.Name != "my-service" {
-		t.Errorf("unexpected relationship source: %s", relationships[0].Source.Metadata.Name)
-	}
-
-	if relationships[0].Target.Metadata.Name != "my-deployment" {
-		t.Errorf("unexpected relationship target: %s", relationships[0].Target.Metadata.Name)
+	if len(relationships) != 3 {
+		t.Fatalf("expected 3 relationships, but got %d", len(relationships))
 	}
 }

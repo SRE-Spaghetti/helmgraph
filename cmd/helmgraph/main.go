@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"helmgraph/internal/cypher"
 	"helmgraph/internal/manifest"
 	"helmgraph/internal/parser"
 	"helmgraph/internal/relations"
@@ -34,24 +35,17 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		// For now, just print the parsed resources
-		for _, r := range resources {
-			fmt.Printf("Found resource: Kind=%s, Name=%s, Namespace=%s\n", r.Kind, r.Metadata.Name, r.Metadata.Namespace)
-		}
-
 		relationships := relations.Identify(resources)
-		for _, rel := range relationships {
-			fmt.Printf("Found relationship: %s --[%s]--> %s\n", rel.Source.Metadata.Name, rel.Type, rel.Target.Metadata.Name)
-		}
+		cypherScript := cypher.Generate(resources, relationships)
 
 		if outputFile != "" {
-			err := os.WriteFile(outputFile, []byte(manifest), 0644)
+			err := os.WriteFile(outputFile, []byte(cypherScript), 0644)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error writing to file: %v\n", err)
 				os.Exit(1)
 			}
 		} else {
-			fmt.Println(manifest)
+			fmt.Println(cypherScript)
 		}
 	},
 }
